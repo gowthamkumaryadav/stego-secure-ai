@@ -10,4 +10,4 @@ RUN mvn clean package
 
 EXPOSE 8081
 
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["sh", "-c", "java -jar /app/target/*.jar"]
