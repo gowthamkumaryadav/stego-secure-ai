@@ -25,9 +25,10 @@ export default function Encode() {
     }
   }, [navigate]);
 
-  const user = localStorage.getItem("user");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleEncode = async () => {
+    console.log("NOW IT WILL WORK");
     if (!file) {
       alert("⚠️ Please select an image");
       return;
@@ -53,6 +54,10 @@ export default function Encode() {
       formData.append("username", user);
 
       const res = await encodeImage(formData);
+
+      if (!res || !res.data) {
+        throw new Error("No response from server");
+      }
 
       // ✅ Download encoded image
       const url = window.URL.createObjectURL(new Blob([res.data]));
