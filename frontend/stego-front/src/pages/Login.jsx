@@ -25,6 +25,9 @@ export default function Login() {
     setLoading(true);
 
     try {
+      console.log("LOGIN START");
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 15000); // 15 sec timeout
       const res = await fetch(
         "https://stego-secure-ai-1.onrender.com/auth/login",
         {
@@ -33,22 +36,23 @@ export default function Login() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ username, password }),
-        },
+          signal: controller.signal
+        }
       );
-
+      console.log("RESPONSE RECIEVED:", res);
       const text = await res.text();
 
-      console.log("LOGIN RESPONSE:", text); // ✅ DEBUG
+      console.log("DATA:", text); // ✅ DEBUG
 
       if (text === "Login Success") {
         localStorage.setItem("user", username);
         navigate("/");
       } else {
-        alert("❌ " + text); // shows actual backend message
+        alert("❌ Invalid Credentials"); // shows actual backend message
       }
     } catch (err) {
-      console.error("LOGIN ERROR:", err);
-      alert("❌ Server error");
+      console.log(err);
+      alert("❌ Backend not responding");
     }
 
     setLoading(false);
