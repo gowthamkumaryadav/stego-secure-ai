@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/stego")
-@CrossOrigin(origins = "*") // allow React sfrontend
+@CrossOrigin(origins = "https://stego-front.onrender.com") // allow React sfrontend
 
 public class StegoController {
 
