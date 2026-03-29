@@ -56,7 +56,7 @@ export default function Decode() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("http://localhost:8081/stego/ai-detect", {
+      const res = await fetch("https://stego-secure-ai-1.onrender.com/stego/ai-detect", {
         method: "POST",
         body: formData,
       });

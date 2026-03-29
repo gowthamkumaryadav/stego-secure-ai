@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { loginUser } from "../api/stegoApi";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -24,21 +25,29 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8081/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      const res = await fetch(
+        "https://stego-secure-ai-1.onrender.com/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        },
+      );
 
-      const data = await res.text();
+      const text = await res.text();
 
-      if (data === "Login Success") {
+      console.log("LOGIN RESPONSE:", text); // ✅ DEBUG
+
+      if (text === "Login Success") {
         localStorage.setItem("user", username);
-        navigate(from);
+        navigate("/");
       } else {
-        alert("❌ Invalid credentials");
+        alert("❌ " + text); // shows actual backend message
       }
-    } catch {
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
       alert("❌ Server error");
     }
 
@@ -60,24 +69,21 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-
       {/* LEFT PANEL */}
       <div className="hidden md:flex w-1/2 bg-gray-900 text-white flex-col justify-center items-center p-10 animate-fadeIn">
         <h1 className="text-4xl font-bold mb-4 tracking-wide">
           StegoSecure AI
         </h1>
         <p className="text-gray-400 text-center max-w-sm">
-          Secure your messages using advanced image steganography with AI detection.
+          Secure your messages using advanced image steganography with AI
+          detection.
         </p>
       </div>
 
       {/* RIGHT PANEL */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-white">
         <div className="w-80 animate-slideUp">
-
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-            Sign in
-          </h2>
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">Sign in</h2>
 
           {/* USERNAME */}
           <div className="relative mb-5">
@@ -87,12 +93,14 @@ export default function Login() {
               className="w-full p-3 border rounded focus:ring-2 focus:ring-black outline-none peer"
               placeholder=" "
             />
-            <label className="absolute left-3 top-3 text-gray-400 text-sm transition-all 
+            <label
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all 
               peer-placeholder-shown:top-3 
               peer-placeholder-shown:text-base 
               peer-focus:top-[-10px] 
               peer-focus:text-sm 
-              peer-focus:text-black bg-white px-1">
+              peer-focus:text-black bg-white px-1"
+            >
               Username
             </label>
           </div>
@@ -107,12 +115,14 @@ export default function Login() {
               placeholder=" "
             />
 
-            <label className="absolute left-3 top-3 text-gray-400 text-sm transition-all 
+            <label
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all 
               peer-placeholder-shown:top-3 
               peer-placeholder-shown:text-base 
               peer-focus:top-[-10px] 
               peer-focus:text-sm 
-              peer-focus:text-black bg-white px-1">
+              peer-focus:text-black bg-white px-1"
+            >
               Password
             </label>
 
@@ -158,7 +168,6 @@ export default function Login() {
             />
             Continue with Google
           </button>
-
         </div>
       </div>
 
