@@ -39,7 +39,7 @@ function App() {
         />
 
         {/* ✅ HOME (PUBLIC) */}
-        <Route path="/" element={<Home />} />
+        <Route path="*" element={<Home />} />
 
         {/* 🔐 PROTECTED ROUTES */}
         <Route
