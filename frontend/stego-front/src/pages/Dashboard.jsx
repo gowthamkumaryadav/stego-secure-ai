@@ -22,7 +22,7 @@ export default function Dashboard() {
   const fetchDashboard = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8081/stego/dashboard?username=${user}`
+        `https://stego-backend-production.up.railway.app/stego/dashboard?username=${user}`
       );
       setStats(res.data);
     } catch (err) {
@@ -34,7 +34,7 @@ export default function Dashboard() {
   const fetchHistory = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8081/stego/history?username=${user}`
+        `https://stego-backend-production.up.railway.app/stego/history?username=${user}`
       );
       setHistory(res.data);
     } catch (err) {

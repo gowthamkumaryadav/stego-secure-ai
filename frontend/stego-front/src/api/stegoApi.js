@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // ✅ Base URLs
-const STEGO_API = "https://stego-secure-ai-1.onrender.com/stego";
-const AUTH_API = "https://stego-secure-ai-1.onrender.com/auth";
+const STEGO_API = "https://stego-backend-production.up.railway.app/stego";
+const AUTH_API = "https://stego-backend-production.up.railway.app/auth";
 
 // =========================
 // 🔐 ENCODE

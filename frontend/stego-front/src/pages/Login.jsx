@@ -26,7 +26,7 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        "https://stego-secure-ai-1.onrender.com/auth/login",
+        "https://stego-backend-production.up.railway.app/auth/login",
         {
           method: "POST",
           headers: {
