@@ -9,12 +9,6 @@ import { motion } from "framer-motion";
 export default function Encode() {
   console.log("ENCODE PAGE LOADED");
 
-  // 🔥 TEMP DEBUG UI
-  return (
-    <div style={{ padding: "50px", fontSize: "24px" }}>
-      ✅ Encode Page Rendering
-    </div>
-  );
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [password, setPassword] = useState("");
@@ -24,19 +18,19 @@ export default function Encode() {
 
   const navigate = useNavigate();
 
+  // ✅ Correct user retrieval
+  const user = localStorage.getItem("user");
+
   // 🔐 Protect route
   useEffect(() => {
-    const user = localStorage.getItem("user");
-
     if (!user) {
       navigate("/login", { state: { from: "/encode" } });
     }
-  }, [navigate]);
-
-  const user = JSON.parse(localStorage.getItem("user"));
+  }, [navigate, user]);
 
   const handleEncode = async () => {
-    console.log("NOW IT WILL WORK");
+    console.log("ENCODE CLICKED");
+
     if (!file) {
       alert("⚠️ Please select an image");
       return;
@@ -61,20 +55,28 @@ export default function Encode() {
       formData.append("password", password);
       formData.append("username", user);
 
+      console.log("Sending request...");
+
       const res = await encodeImage(formData);
+
+      console.log("Response:", res);
 
       if (!res || !res.data) {
         throw new Error("No response from server");
       }
 
-      // ✅ Download encoded image
-      const url = window.URL.createObjectURL(new Blob([res.data]));
+      // ✅ Download file safely
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
       link.href = url;
       link.download = "encoded.png";
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
-      // 🔥 Reset form after success
+      // Reset form
       setMessage("");
       setPassword("");
       setFile(null);
@@ -82,12 +84,13 @@ export default function Encode() {
 
       alert("✅ Encoding successful!");
     } catch (err) {
-      console.error(err);
+      console.error("ENCODE ERROR:", err);
       alert("❌ Encoding failed");
     }
 
     setLoading(false);
   };
+
   const getStrength = (password) => {
     if (password.length < 6)
       return { text: "Weak", color: "bg-red-500", width: "33%" };
@@ -95,6 +98,7 @@ export default function Encode() {
       return { text: "Medium", color: "bg-yellow-500", width: "66%" };
     return { text: "Strong", color: "bg-green-500", width: "100%" };
   };
+
   const generateMessage = () => {
     const messages = [
       "Confidential data secured 🔐",
@@ -116,17 +120,11 @@ export default function Encode() {
         transition={{ duration: 0.4 }}
         className="max-w-xl mx-auto mt-12 px-4"
       >
-        {/* 🔥 CARD */}
-        <div
-          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl 
-      rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
-        >
-          {/* TITLE */}
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
             Encode Message
           </h2>
 
-          {/* UPLOAD */}
           <UploadBox
             setFile={setFile}
             setPreview={setPreview}
@@ -136,7 +134,6 @@ export default function Encode() {
             }}
           />
 
-          {/* PREVIEW */}
           {preview && (
             <div className="w-full h-64 bg-gray-100 dark:bg-gray-900 rounded-lg mt-4 shadow flex items-center justify-center overflow-hidden">
               <motion.img
@@ -144,114 +141,63 @@ export default function Encode() {
                 alt="preview"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
                 className="max-h-full max-w-full object-contain"
               />
             </div>
           )}
 
-          {/* MESSAGE */}
           <div className="flex items-center gap-2 mt-5">
             <textarea
               value={message}
               placeholder="Enter secret message..."
               onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 p-3 border rounded-lg 
-            focus:ring-2 focus:ring-blue-500 outline-none transition
-            dark:bg-gray-900 text-gray-900 dark:text-white"
+              className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
 
-            {/* AI BUTTON */}
-            <div className="relative group">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={generateMessage}
-                className="w-11 h-11 flex items-center justify-center 
-              rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 
-              text-white shadow-lg"
-              >
-                🤖
-              </motion.button>
-
-              <span
-                className="absolute right-0 bottom-14 
-              bg-black text-white text-xs px-2 py-1 rounded 
-              opacity-0 group-hover:opacity-100 transition"
-              >
-                Generate AI Message
-              </span>
-            </div>
+            <button
+              onClick={generateMessage}
+              className="w-11 h-11 rounded-full bg-purple-600 text-white"
+            >
+              🤖
+            </button>
           </div>
 
-          {/* PASSWORD */}
           <div className="relative mt-5">
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               placeholder="Enter password..."
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded-lg pr-10
-            focus:ring-2 focus:ring-blue-500 outline-none transition
-            dark:bg-gray-900 text-gray-900 dark:text-white"
+              className="w-full p-3 border rounded-lg pr-10"
             />
 
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:scale-110 transition"
+              className="absolute right-3 top-3 cursor-pointer"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
 
-          {/* 🔥 PASSWORD STRENGTH BAR */}
           {password && (
             <div className="mt-2">
-              {/* TEXT */}
-              <p
-                className={`text-sm font-medium ${
-                  getStrength(password).text === "Weak"
-                    ? "text-red-500"
-                    : getStrength(password).text === "Medium"
-                      ? "text-yellow-500"
-                      : "text-green-500"
-                }`}
-              >
-                {getStrength(password).text}
-              </p>
-
-              {/* BAR */}
+              <p>{getStrength(password).text}</p>
               <div className="h-2 w-full bg-gray-200 rounded mt-1">
                 <div
-                  className={`h-2 rounded transition-all duration-500 ${getStrength(password).color}`}
+                  className={getStrength(password).color}
                   style={{ width: getStrength(password).width }}
                 ></div>
               </div>
             </div>
           )}
 
-          {/* LOADING */}
-          {loading && (
-            <div className="flex justify-center mt-4">
-              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          )}
-
-          {/* BUTTON */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+          <button
             onClick={handleEncode}
             disabled={loading}
-            className={`w-full mt-6 py-3 rounded-lg font-semibold shadow-md transition-all
-          ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg"
-          }`}
+            className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg"
           >
             {loading ? "Encoding..." : "Encode & Download"}
-          </motion.button>
+          </button>
         </div>
       </motion.div>
     </div>
