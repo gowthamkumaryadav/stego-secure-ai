@@ -27,21 +27,25 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const user = localStorage.getItem("user");
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ LOGIN */}
+
+        {/* LOGIN */}
         <Route
           path="/login"
-          element={
-            localStorage.getItem("user") ? <Navigate to="/" /> : <Login />
-          }
+          element={user ? <Navigate to="/" replace /> : <Login />}
         />
 
-        {/* ✅ HOME (PUBLIC) */}
-        <Route path="*" element={<Home />} />
+        {/* PUBLIC */}
+        <Route path="/" element={<Home />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<Contact />} />
 
-        {/* 🔐 PROTECTED ROUTES */}
+        {/* PROTECTED */}
         <Route
           path="/encode"
           element={
@@ -68,10 +72,10 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* ✅ PUBLIC ROUTES */}
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/contact" element={<Contact />} />
+
+        {/* 🔥 VERY IMPORTANT */}
+        <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </BrowserRouter>
   );
