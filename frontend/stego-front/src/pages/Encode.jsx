@@ -7,6 +7,14 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function Encode() {
+  console.log("ENCODE PAGE LOADED");
+
+  // 🔥 TEMP DEBUG UI
+  return (
+    <div style={{ padding: "50px", fontSize: "24px" }}>
+      ✅ Encode Page Rendering
+    </div>
+  );
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [password, setPassword] = useState("");

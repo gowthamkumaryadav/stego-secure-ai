@@ -16,11 +16,13 @@ import Privacy from "./pages/Privacy";
 
 // 🔐 Protected Route with redirect back
 const ProtectedRoute = ({ children }) => {
-  const user = localStorage.getItem("user");
   const location = useLocation();
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location.pathname }} />;
+  const user = localStorage.getItem("user");
+
+  // ✅ Handle invalid values
+  if (!user || user === "undefined" || user === "null") {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   return children;
@@ -32,7 +34,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* LOGIN */}
         <Route
           path="/login"
@@ -75,7 +76,6 @@ function App() {
 
         {/* 🔥 VERY IMPORTANT */}
         <Route path="*" element={<Navigate to="/" />} />
-
       </Routes>
     </BrowserRouter>
   );
