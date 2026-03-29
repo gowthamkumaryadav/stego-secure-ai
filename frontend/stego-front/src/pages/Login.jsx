@@ -24,10 +24,12 @@ export default function Login() {
 
     setLoading(true);
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     try {
       console.log("LOGIN START");
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 15000); // 15 sec timeout
+
       const res = await fetch(
         "https://stego-secure-ai-1.onrender.com/auth/login",
         {
@@ -36,26 +38,39 @@ export default function Login() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ username, password }),
-          signal: controller.signal
-        }
+          signal: controller.signal,
+        },
       );
-      console.log("RESPONSE RECIEVED:", res);
-      const text = await res.text();
 
-      console.log("DATA:", text); // ✅ DEBUG
+      console.log("RESPONSE:", res);
+
+      if (!res.ok) {
+        throw new Error("Server error");
+      }
+
+      const text = await res.text();
+      console.log("DATA:", text);
 
       if (text === "Login Success") {
         localStorage.setItem("user", username);
-        navigate("/");
+
+        // ✅ FIXED REDIRECT
+        navigate(from, { replace: true });
       } else {
-        alert("❌ Invalid Credentials"); // shows actual backend message
+        alert("❌ Invalid Credentials");
       }
     } catch (err) {
-      console.log(err);
-      alert("❌ Backend not responding");
-    }
+      console.error("LOGIN ERROR:", err);
 
-    setLoading(false);
+      if (err.name === "AbortError") {
+        alert("⏳ Server taking too long (Render sleeping)");
+      } else {
+        alert("❌ Backend not responding");
+      }
+    } finally {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
   };
 
   // 🔥 Google Login
@@ -64,7 +79,7 @@ export default function Login() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       localStorage.setItem("user", user.displayName);
-      navigate(from);
+      navigate(from , { replace: true });
     } catch (err) {
       console.error(err);
       alert("Google login failed");
