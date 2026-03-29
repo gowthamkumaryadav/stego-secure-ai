@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaLock, FaRobot, FaImage, FaBolt } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -25,16 +25,16 @@ export default function Home() {
     setTypedText("");
 
     const interval = setInterval(() => {
-      if (index <= message.length) {
-        setTypedText(message.slice(0, index));
-        index++;
-      } else {
+      setTypedText(message.slice(0, index));
+      index++;
+
+      if (index > message.length) {
         clearInterval(interval);
       }
     }, 100);
 
     return () => clearInterval(interval);
-  }, [step, message]);
+  }, [step]);
 
   // Binary converter
   const toBinary = (text) => {
@@ -61,7 +61,7 @@ export default function Home() {
             Login
           </button>
           <button
-            onClick={() => navigate("/encode")}
+            onClick={() => navigate("/encode", { replace: false })}
             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
           >
             Get Started
@@ -278,19 +278,18 @@ export default function Home() {
           <div className="flex flex-col gap-2">
             <h3 className="text-white font-medium mb-2">Legal</h3>
 
-            <a href="/privacy" className="hover:text-white transition">
+            <Link to="/privacy" className="hover:text-white transition">
               Privacy Policy
-            </a>
+            </Link>
 
-            <a href="/terms" className="hover:text-white transition">
+            <Link to="/terms" className="hover:text-white transition">
               Terms & Conditions
-            </a>
+            </Link>
 
-            <a href="/contact" className="hover:text-white transition">
+            <Link to="/contact" className="hover:text-white transition">
               Contact Us
-            </a>
+            </Link>
           </div>
-
           {/* CONTACT INFO */}
           <div>
             <h3 className="text-white font-medium mb-2">Contact</h3>
