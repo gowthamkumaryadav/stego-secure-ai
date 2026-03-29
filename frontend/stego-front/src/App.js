@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import { useState, useEffect } from "react";
 
 // 🔐 Protected Route with redirect back
 const ProtectedRoute = ({ children }) => {
@@ -30,6 +31,11 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const user = localStorage.getItem("user");
+  useEffect(() => {
+    fetch("https://stego-backend-production.up.railway.app")
+      .then(() => console.log("Backend awake"))
+      .catch(() => console.log("Backend waking..."));
+  }, []);
 
   return (
     <BrowserRouter>
