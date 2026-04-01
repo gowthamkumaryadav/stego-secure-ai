@@ -16,57 +16,79 @@ export default function Login() {
   const from = location.state?.from || "/";
 
   // 🔐 Normal Login
-  const handleLogin = async () => {
-    if (!username || !password) {
-      alert("⚠️ Please fill all fields");
-      return;
-    }
+ const handleLogin = async () => {
+  if (!username || !password) {
+    alert("⚠️ Please fill all fields");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const res = await fetch(
-        "https://stego-backend-production.up.railway.app/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
+  try {
+    const res = await fetch(
+      "https://stego-backend-production.up.railway.app/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-
-      const text = await res.text();
-
-      console.log("STATUS:", res.status);
-      console.log("RESPONSE:", text);
-
-      if (text.toLowerCase().includes("success")) {
-        localStorage.setItem("user", username);
-        navigate("/");
-      } else {
-        alert("❌ Invalid Credentials");
+        body: JSON.stringify({ username, password }),
       }
-    } catch (err) {
-      console.error(err);
-      alert("❌ Network error (backend waking up, try again)");
+    );
+
+    console.log("STATUS:", res.status);
+
+    // ✅ SUCCESS CASE
+    if (res.ok) {
+      const data = await res.json(); // backend returns user object
+      console.log("LOGIN SUCCESS:", data);
+
+      localStorage.setItem("user", data.username);
+      navigate("/");
+    } 
+    // ❌ ERROR CASE
+    else {
+      const errorText = await res.text();
+      console.log("ERROR:", errorText);
+
+      alert("❌ Invalid Credentials");
     }
 
-    setLoading(false);
-  };
+  } catch (err) {
+    console.error(err);
+    alert("❌ Network error (backend waking up, try again)");
+  }
 
+  setLoading(false);
+};
   // 🔥 Google Login
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      localStorage.setItem("user", user.displayName);
-      navigate(from, { replace: true });
-    } catch (err) {
-      console.error(err);
-      alert("Google login failed");
-    }
-  };
+ const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    console.log("Google User:", user);
+
+    // ✅ Send to backend (auto register/login)
+    await fetch("https://stego-backend-production.up.railway.app/auth/google", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: user.email,
+        password: "GOOGLE_USER",
+      }),
+    });
+
+    localStorage.setItem("user", user.email);
+    navigate("/");
+    
+  } catch (err) {
+    console.error(err);
+    alert("Google login failed");
+  }
+};
 
   return (
     <div className="min-h-screen flex">

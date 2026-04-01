@@ -32,7 +32,7 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   const user = localStorage.getItem("user");
   useEffect(() => {
-    fetch("https://stego-backend-production.up.railway.app")
+    fetch("https://stego-backend-production.up.railway.app/")
       .then(() => console.log("Backend awake"))
       .catch(() => console.log("Backend waking..."));
   }, []);
